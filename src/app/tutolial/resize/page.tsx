@@ -1,3 +1,5 @@
+'use client';
+import {css} from '../../../styled-system/css';
 import {
   createColumnHelper,
   flexRender,
@@ -42,6 +44,10 @@ export default function Home() {
     data,
     columns,
     getCoreRowModel: getCoreRowModel(),
+    columnResizeMode: 'onChange',
+    debugTable: true,
+    debugHeaders: true,
+    debugColumns: true,
   });
   return (
     <table>
@@ -49,10 +55,34 @@ export default function Home() {
         {table.getHeaderGroups().map((headerGroup) => (
           <tr key={headerGroup.id}>
             {headerGroup.headers.map((header) => (
-              <th key={header.id}>
+              <th
+                key={header.id}
+                style={{width: header.getSize()}}
+                className={css({position: 'relative'})}
+              >
                 {header.isPlaceholder
                   ? null
                   : flexRender(header.column.columnDef.header, header.getContext())}
+                <div
+                  {...{
+                    onMouseDown: header.getResizeHandler(),
+                    onTouchStart: header.getResizeHandler(),
+                    className: `resizer ${header.column.getIsResizing() ? 'isResizing' : ''}`,
+                  }}
+                  onMouseDown={header.getResizeHandler()}
+                  onTouchStart={header.getResizeHandler()}
+                  className={css({
+                    position: 'absolute',
+                    right: 0,
+                    top: 0,
+                    height: 'full',
+                    width: '1',
+                    bg: 'gray.300',
+                    cursor: 'col-resize',
+                    userSelect: 'none',
+                    touchAction: 'none',
+                  })}
+                />
               </th>
             ))}
           </tr>
@@ -62,7 +92,14 @@ export default function Home() {
         {table.getRowModel().rows.map((row) => (
           <tr key={row.id}>
             {row.getVisibleCells().map((cell) => (
-              <td key={cell.id}>{flexRender(cell.column.columnDef.cell, cell.getContext())}</td>
+              <td
+                key={cell.id}
+                style={{
+                  width: cell.column.getSize(),
+                }}
+              >
+                {flexRender(cell.column.columnDef.cell, cell.getContext())}
+              </td>
             ))}
           </tr>
         ))}

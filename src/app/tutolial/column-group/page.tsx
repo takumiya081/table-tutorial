@@ -1,3 +1,4 @@
+'use client';
 import {
   createColumnHelper,
   flexRender,
@@ -9,6 +10,21 @@ import {data, type Person} from '@/data';
 const columnHelper = createColumnHelper<Person>();
 
 const columns = [
+  columnHelper.group({
+    id: 'hello',
+    header: 'Hello',
+    columns: [
+      columnHelper.accessor('firstName', {
+        cell: (info) => info.getValue(),
+        footer: (info) => info.column.id,
+      }),
+      columnHelper.accessor((row) => row.lastName, {
+        id: 'lastName',
+        cell: (info) => <p>{info.getValue()}</p>,
+        header: () => <span>Last Name</span>,
+      }),
+    ],
+  }),
   columnHelper.accessor('firstName', {
     cell: (info) => info.getValue(),
     footer: (info) => info.column.id,
